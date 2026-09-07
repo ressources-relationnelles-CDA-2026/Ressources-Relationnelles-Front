@@ -35,6 +35,9 @@ jobs:
 
       - name: Installation des dépendances
         run: npm ci
+      
+      - name: Tests avec couverture
+        run: npm run test:coverage
 
       - name: Analyse du code
         uses: SonarSource/sonarqube-scan-action@v6

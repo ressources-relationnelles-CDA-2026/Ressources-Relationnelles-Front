@@ -51,14 +51,17 @@ export function useAuth() {
   };
 
   useEffect(() => {
-    syncAuth();
+  const initialSync = window.setTimeout(() => {
+    void syncAuth();
+  }, 0);
 
-    window.addEventListener("auth-change", syncAuth);
+  window.addEventListener("auth-change", syncAuth);
 
-    return () => {
-      window.removeEventListener("auth-change", syncAuth);
-    };
-  }, []);
+  return () => {
+    window.clearTimeout(initialSync);
+    window.removeEventListener("auth-change", syncAuth);
+  };
+}, []);
 
   return {
     isAuth,

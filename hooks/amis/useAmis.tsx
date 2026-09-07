@@ -17,7 +17,7 @@ export function useAmis() {
       const data = await getAmis();
       setAmis(data);
       return data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       return [];
     } finally {

@@ -12,7 +12,7 @@ export function useDeleteCategorie(id: number) {
     try {
       await deleteCategorieService(id);
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       return false;
     } finally {

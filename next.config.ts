@@ -1,3 +1,9 @@
+const apiUrl = (
+  process.env.API_URL ?? "http://localhost:8000"
+).replace(/\/$/, "");
+
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig: import("next").NextConfig = {
 
@@ -5,7 +11,7 @@ const nextConfig: import("next").NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8000/api/:path*",
+        destination: `${apiUrl}/api/:path*`,
       },
     ];
   },

@@ -18,7 +18,7 @@ export function useCreateConsultation() {
       setData(result);
 
       return result;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       return null;
     } finally {

@@ -22,7 +22,7 @@ export default async function createMessage(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
+     await response.text();
 
     throw new Error("Impossible d’envoyer le message.");
   }

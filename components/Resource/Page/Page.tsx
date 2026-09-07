@@ -16,12 +16,34 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Page({ resource }: Readonly<PageProps>) {
   const { isAuth, userId } = useAuth();
+  const existingLike =
+      isAuth && userId
+       ? resource.adorers.find(
+        (adorer) => adorer.utilisateur.id === userId,
+      )
+      : undefined;
+
+    const existingFavori =
+    isAuth && userId
+    ? resource.favoris.find(
+        (favori) => favori.utilisateur.id === userId,
+      )
+    : undefined;
+
+   const interactionKey = [
+  resource.id,
+  userId ?? "anonymous",
+  existingLike?.id ?? "no-like",
+  existingFavori?.id ?? "no-favori",
+].join(":");
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isFavoris, setIsFavoris] = useState<boolean>(false);
 
   const [adorerId, setAdorerId] = useState<number | null>(null);
   const [favoriId, setFavoriId] = useState<number | null>(null);
+
+  const [previousInteractionKey, setPreviousInteractionKey] =useState(interactionKey);
 
   const [adorersCount, setAdorersCount] = useState(resource.adorers.length);
   const [favorisCount, setFavorisCount] = useState(resource.favoris.length);
@@ -52,27 +74,13 @@ export default function Page({ resource }: Readonly<PageProps>) {
     addConsultation();
   }, [createConsultation, resource.id, isAuth, userId]);
 
-  useEffect(() => {
-    if (!isAuth || !userId) return;
-
-    const existingLike = resource.adorers.find(
-      (adorer) => adorer.utilisateur.id === userId,
-    );
-
-    const existingFavori = resource.favoris.find(
-      (favori) => favori.utilisateur.id === userId,
-    );
-
-    if (existingLike) {
-      setIsLiked(true);
-      setAdorerId(existingLike.id);
-    }
-
-    if (existingFavori) {
-      setIsFavoris(true);
-      setFavoriId(existingFavori.id);
-    }
-  }, [resource, isAuth, userId]);
+  if (interactionKey !== previousInteractionKey) {
+  setPreviousInteractionKey(interactionKey);
+  setIsLiked(Boolean(existingLike));
+  setAdorerId(existingLike?.id ?? null);
+  setIsFavoris(Boolean(existingFavori));
+  setFavoriId(existingFavori?.id ?? null);
+}
 
   return (
     <div className={styles.resourcePage}>

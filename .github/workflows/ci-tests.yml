@@ -34,13 +34,13 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
-      - name: Tests unitaires
-        run: npm run test:ci 
+      - name: Tests unitaires avec couverture
+        run: npm run test:coverage
 
-
-      # Etape pour remplacer les tests une fois les tests implementé
-
-      # - name: Tests avec couverture
-      #   run: npm run test:coverage
+      - name: Conserver le rapport de couverture
+        uses: actions/upload-artifact@v4
+        with:
+          name: front-coverage
+          path: coverage/
 
   

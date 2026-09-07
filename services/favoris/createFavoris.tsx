@@ -1,4 +1,5 @@
 import { apiFetch } from "../apiFetch";
+import { Favori } from "@/types/database/favoris";
 
 export type CreateFavoriPayload = {
   utilisateur: string;
@@ -7,7 +8,7 @@ export type CreateFavoriPayload = {
 
 export default async function createFavori(
   payload: CreateFavoriPayload
-): Promise<any> {
+): Promise<Favori> {
   const res = await apiFetch("/api/favoris", {
     method: "POST",
     headers: {

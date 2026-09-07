@@ -1,7 +1,7 @@
 import { apiFetch } from "../apiFetch";
 
 export default async function deleteUtilisateur(id: number | null): Promise<void> {
-  const res = await apiFetch(`/api/utilisateurs/${id}`, {
+  await apiFetch(`/api/utilisateurs/${id}`, {
     method: "DELETE",
   });
 }

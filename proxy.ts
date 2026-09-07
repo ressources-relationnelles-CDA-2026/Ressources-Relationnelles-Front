@@ -23,7 +23,7 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  // ta CSP en dessous...
+
 
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 

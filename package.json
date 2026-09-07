@@ -9,12 +9,13 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "test:ci": "jest --ci --passWithNoTests",
+    "test:ci": "jest --ci",
+    "test:coverage": "jest --ci --coverage",
     "test:e2e": "playwright test",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
-    "next": "16.1.6",
+    "next": "16.3.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

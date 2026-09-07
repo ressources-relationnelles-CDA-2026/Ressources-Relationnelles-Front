@@ -9,11 +9,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePutUtilisateur } from "@/hooks/utilisateurs/usePutUtilisateur";
 import { useUtilisateur } from "@/hooks/utilisateurs/useUtilisateur";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore , useState } from "react";
+
+const emptySubscribe = () => () => {};
 
 export default function AlterUtilisateur() {
   const [message, setMessage] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+  emptySubscribe,
+  () => true,
+  () => false,
+);
 
   const params = useParams();
   const id = params.id as string;
@@ -23,10 +29,6 @@ export default function AlterUtilisateur() {
   const { roles } = useRoles();
   const router = useRouter();
   const { isAdmin, userId } = useAuth();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSubmit = async (formData: Record<string, string>) => {
     const res = await putUtilisateur({

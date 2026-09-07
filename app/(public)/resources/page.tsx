@@ -5,7 +5,7 @@ import CreateButton from "@/components/ui/CreateButton/CreateButton";
 import Filter from "@/components/ui/Filter/Filter";
 import { useRessources } from "@/hooks/ressources/useRessources";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 
 export default function ResourcesPage() {
   const { resources, loading, error } = useRessources();
@@ -13,13 +13,8 @@ export default function ResourcesPage() {
 
   const [search, setSearch] = useState("");
   const [filterBy, setFilterBy] = useState("all");
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (userId) {
-      setCurrentUserId(Number(userId));
-    }
-  }, []);
+  const currentUserId = userId ? Number(userId) : null;
 
   const filteredResources = resources
     .filter((resource) => {

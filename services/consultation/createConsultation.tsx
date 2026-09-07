@@ -1,4 +1,5 @@
 import { apiFetch } from "../apiFetch";
+import { Consultation } from "@/types/database/consultations";
 
 export type CreateConsultationPayload = {
   utilisateur: string | null;
@@ -7,7 +8,7 @@ export type CreateConsultationPayload = {
 
 export default async function createConsultation(
   payload: CreateConsultationPayload
-): Promise<any> {
+): Promise<Consultation> {
   const res = await apiFetch("/api/consultations", {
     method: "POST",
     headers: {
