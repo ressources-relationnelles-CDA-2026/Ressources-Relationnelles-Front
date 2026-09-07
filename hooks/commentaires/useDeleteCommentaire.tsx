@@ -12,8 +12,8 @@ export function useDeleteCommentaire(id: number) {
     try {
       await deleteCommentaireService(id);
       return true;
-    } catch (err: any) {
-      setError(err?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       return false;
     } finally {
       setLoading(false);

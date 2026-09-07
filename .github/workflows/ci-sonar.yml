@@ -1,0 +1,45 @@
+
+name: Front - SonarCloud
+
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+      
+
+  pull_request:
+    branches:
+      - dev
+      - main
+
+
+jobs:
+  sonar:
+    name: Analyse SonarCloud
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Récupération du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installation des dépendances
+        run: npm ci
+      
+      - name: Tests avec couverture
+        run: npm run test:coverage
+
+      - name: Analyse du code
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

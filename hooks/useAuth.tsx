@@ -1,53 +1,73 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/services/apiFetch";
 
-function parseJwt(token: string) {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch {
-    return null;
-  }
+interface User {
+  id: number;
+  email: string;
+  pseudo: string;
+  nom: string;
+  prenom: string;
+  telephone: string;
+  roles: string[];
 }
 
 export function useAuth() {
   const [isAuth, setIsAuth] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isModo, setIsModo] = useState(false);
-  const [userName, setUserName] = useState<string | null>();
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const syncAuth = () => {
-    const token = localStorage.getItem("token");
+  const syncAuth = async () => {
+    try {
+      const response = await apiFetch("/api/me");
 
-    setIsAuth(!!token);
+      if (!response.ok) {
+        setIsAuth(false);
+        setIsAdmin(false);
+        setIsModo(false);
+        setUserName(null);
+        setUserId(null);
+        return;
+      }
 
-    if (token) {
-      const payload = parseJwt(token);
+      const user: User = await response.json();
 
-      setIsAdmin(payload?.roles.includes("ROLE_ADMIN"));
+      setIsAuth(true);
+      setIsAdmin(user.roles.includes("ROLE_ADMIN"));
       setIsModo(
-        payload?.roles.includes("ROLE_MODERATEUR") ||
-          payload?.roles.includes("ROLE_ADMIN"),
+        user.roles.includes("ROLE_MODERATEUR") ||
+        user.roles.includes("ROLE_ADMIN")
       );
-      setUserName(payload?.username);
-    } else {
+      setUserName(user.pseudo);
+      setUserId(user.id);
+    } catch {
+      setIsAuth(false);
       setIsAdmin(false);
       setIsModo(false);
+      setUserName(null);
+      setUserId(null);
     }
   };
 
   useEffect(() => {
-    syncAuth();
+  const initialSync = window.setTimeout(() => {
+    void syncAuth();
+  }, 0);
 
-    window.addEventListener("auth-change", syncAuth);
+  window.addEventListener("auth-change", syncAuth);
 
-    return () => {
-      window.removeEventListener("auth-change", syncAuth);
-    };
-  }, []);
+  return () => {
+    window.clearTimeout(initialSync);
+    window.removeEventListener("auth-change", syncAuth);
+  };
+}, []);
 
   return {
     isAuth,
     isAdmin,
     isModo,
     userName,
+    userId,
   };
 }

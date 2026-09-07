@@ -15,75 +15,62 @@ function truncate(text: string, max: number) {
 export default function ResourcesCard({
   resources,
 }: Readonly<ResourcesCardProps>) {
-  const { isAuth, isAdmin, userName } = useAuth();
+  const { isAuth, isAdmin, userName, userId } = useAuth();
   const { deleteRessource } = useDeleteRessource(0);
+
   return (
     <div className={styles.cardGrid}>
-      {resources.map((resource) => (
-        <article
-          key={resource.id}
-          className={`${styles.card} ${
-            resource.favoris.some(
-              (favori) =>
-                favori.utilisateur.id ===
-                Number(localStorage.getItem("userId")),
-            )
-              ? styles.favoriteCard
-              : ""
-          }
-          ${
-            resource.adorers.some(
-              (adorer) =>
-                adorer.utilisateur.id ===
-                Number(localStorage.getItem("userId")),
-            )
-              ? styles.likedCard
-              : ""
-          }`}
-        >
-          <Link
-            href={`/resource/${resource.id}`}
-            className={styles.cardContent}
+      {resources.map((resource) => {
+        const isFavorite = resource.favoris.some(
+          (favori) => favori.utilisateur.id === userId,
+        );
+
+        const isLiked = resource.adorers.some(
+          (adorer) => adorer.utilisateur.id === userId,
+        );
+
+        return (
+          <article
+            key={resource.id}
+            className={`${styles.card} ${
+              isFavorite ? styles.favoriteCard : ""
+            } ${isLiked ? styles.likedCard : ""}`}
           >
-            <span
-              className={styles.cardLibelleCategorie}
-              style={{ color: resource.categorie.couleur }}
+            <Link
+              href={`/resource/${resource.id}`}
+              className={styles.cardContent}
             >
-              {resource.categorie.libelle +
-                (resource.favoris.some(
-                  (favori) =>
-                    favori.utilisateur.id ===
-                    Number(localStorage.getItem("userId")),
-                )
-                  ? " / Favori"
-                  : "") +
-                (resource.adorers.some(
-                  (adorer) =>
-                    adorer.utilisateur.id ===
-                    Number(localStorage.getItem("userId")),
-                )
-                  ? " / Adoré"
-                  : "")}
-            </span>
+              <span
+                className={styles.cardLibelleCategorie}
+                style={{ color: resource.categorie.couleur }}
+              >
+                {resource.categorie.libelle +
+                  (isFavorite ? " / Favori" : "") +
+                  (isLiked ? " / Adoré" : "")}
+              </span>
 
-            <h2 className={styles.cardTitre}>{resource.titre}</h2>
+              <h2 className={styles.cardTitre}>{resource.titre}</h2>
 
-            <p className={styles.cardContenu}>
-              {truncate(resource.contenu, 35)}
-            </p>
-          </Link>
-          {(isAdmin || (isAuth && userName == resource.utilisateur.pseudo)) && (
-            <div className={styles.resourcesActions}>
-              <EditButton url={`/resource/edit/${resource.id}`} />
-              <DeleteButton
-                onConfirm={async () => {
-                  await deleteRessource(resource.id);
-                }}
-              />
-            </div>
-          )}
-        </article>
-      ))}
+              <p className={styles.cardContenu}>
+                {truncate(resource.contenu, 35)}
+              </p>
+            </Link>
+
+            {(isAdmin ||
+              (isAuth && userName == resource.utilisateur.pseudo)) && (
+              <div className={styles.resourcesActions}>
+                <EditButton url={`/resource/edit/${resource.id}`} />
+
+                <DeleteButton
+                  onConfirm={async () => {
+                    await deleteRessource(resource.id);
+                  }}
+                />
+              </div>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }

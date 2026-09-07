@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function editCategorie() {
+export default function EditCategorie() {
   const [message, setMessage] = useState("");
   const params = useParams();
   const id = params.id as string;

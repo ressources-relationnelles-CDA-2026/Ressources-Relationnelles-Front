@@ -1,6 +1,7 @@
 
 import styles from "@/components/Messagerie/Page.module.css"
 import { ConversationHeaderProps } from "@/types/components/messagerie/ConversationHeader";
+import Image from "next/image";
 
 
 export default function ConversationHeader({setSelectedUserId,selectedConversation,getAvatarLetter}:Readonly<ConversationHeaderProps>){
@@ -17,10 +18,12 @@ export default function ConversationHeader({setSelectedUserId,selectedConversati
 
                 
                 {selectedConversation.user.photo_profil ? (
-                  <img
+                  <Image
                     src={selectedConversation.user.photo_profil}
                     alt=""
                     className={styles.avatar}
+                    width={100}
+                    height={100}
                   />
                 ) : (
                   <div className={styles.avatarPlaceholder}>

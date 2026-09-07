@@ -1,8 +1,6 @@
 import styles from "@/components/Amis/Page.module.css";
 import { AmisCardProps } from "@/types/components/amis/AmisCardProps";
-
-
-
+import Image from "next/image";
 
 export default function AmisCard({userId,typedUser,getAvatarLetter,adding,handleAddFriend}:AmisCardProps){
 
@@ -10,10 +8,12 @@ export default function AmisCard({userId,typedUser,getAvatarLetter,adding,handle
          <article key={userId} className={styles.userCard}>
                 <div className={styles.userLeft}>
                   {typedUser.photo_profil ? (
-                    <img
+                    <Image
                       src={typedUser.photo_profil}
                       alt=""
                       className={styles.avatar}
+                      width={100}
+                      height={100}
                     />
                   ) : (
                     <div className={styles.avatarPlaceholder}>

@@ -42,8 +42,9 @@ export function usePutUtilisateur(id: string) {
       setData(result);
 
       return result;
-    } catch (err: any) {
-      setError(err?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
+
       return null;
     } finally {
       setLoading(false);

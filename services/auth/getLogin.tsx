@@ -1,5 +1,6 @@
 import { User } from "@/types/database/users";
 import { Token } from "@/types/database/tokens";
+import { apiFetch } from "../apiFetch";
 
 type LoginData = {
   token: Token;
@@ -14,7 +15,7 @@ export default async function getLogin(
   email: string,
   password: string
 ): Promise<LoginData> {
-  const res = await fetch("/api/login_check", {
+  const res = await apiFetch("/api/login_check", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

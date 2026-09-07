@@ -1,12 +1,7 @@
-export default async function deleteRessource(id: number | null): Promise<void> {
-  const res = await fetch(`/api/ressources/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+import { apiFetch } from "../apiFetch";
 
-  if (!res.ok) {
-    throw new Error(`Erreur API: ${res.status}`);
-  }
+export default async function deleteRessource(id: number | null): Promise<void> {
+   await apiFetch(`/api/ressources/${id}`, {
+    method: "DELETE",
+  });
 }

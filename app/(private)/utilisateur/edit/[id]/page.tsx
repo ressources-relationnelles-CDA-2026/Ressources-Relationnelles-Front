@@ -9,19 +9,26 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePutUtilisateur } from "@/hooks/utilisateurs/usePutUtilisateur";
 import { useUtilisateur } from "@/hooks/utilisateurs/useUtilisateur";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useSyncExternalStore , useState } from "react";
 
-export default function alterUtilisateur() {
+const emptySubscribe = () => () => {};
+
+export default function AlterUtilisateur() {
   const [message, setMessage] = useState("");
+  const mounted = useSyncExternalStore(
+  emptySubscribe,
+  () => true,
+  () => false,
+);
+
   const params = useParams();
   const id = params.id as string;
+
   const { utilisateur } = useUtilisateur(id);
   const { putUtilisateur, loading, error } = usePutUtilisateur(id);
   const { roles } = useRoles();
   const router = useRouter();
-  const { isAdmin } = useAuth();
-
-  if (id !== localStorage.getItem("userId") && !isAdmin) return <AccessDenied/>; 
+  const { isAdmin, userId } = useAuth();
 
   const handleSubmit = async (formData: Record<string, string>) => {
     const res = await putUtilisateur({
@@ -31,10 +38,15 @@ export default function alterUtilisateur() {
       email: formData.email,
       pseudo: formData.pseudo,
       photoProfil: utilisateur?.photo_profil ?? "",
-      statusCompte: Boolean(formData.statusCompte) ?? utilisateur?.statusCompte,
+      statusCompte: formData.statusCompte
+        ? formData.statusCompte === "1"
+        : (utilisateur?.statusCompte ?? false),
       dateCreation: utilisateur?.dateCreation ?? new Date().toISOString(),
-      role: formData.role != null ? `/api/roles_utilisateurs/${formData.role}` : `/api/roles_utilisateurs/${utilisateur?.role.id}`,
-      plainPassword: formData.plainPassword,
+      role:
+        formData.role != null
+          ? `/api/roles_utilisateurs/${formData.role}`
+          : `/api/roles_utilisateurs/${utilisateur?.role.id}`,
+      plainPassword: formData.password,
     });
 
     if (res) {
@@ -45,6 +57,10 @@ export default function alterUtilisateur() {
     }
   };
 
+  if (!mounted) return <p>Chargement...</p>;
+
+  if (id !== String(userId) && !isAdmin) return <AccessDenied />;
+
   if (loading) return <p>Chargement...</p>;
 
   return (
@@ -52,8 +68,10 @@ export default function alterUtilisateur() {
       {(message || error) && (
         <FormMessage message={message || error || ""} error={!!error} />
       )}
+
       <div className="page">
-        <BackButton href={`/utilisateur/${id}`}/>
+        <BackButton href={`/utilisateur/${id}`} />
+
         <Form
           titreForm="Données utilisateur"
           champs={[
@@ -64,14 +82,7 @@ export default function alterUtilisateur() {
             "Pseudo",
             "Nouveau mot de passe",
           ]}
-          names={[
-            "nom",
-            "prenom",
-            "telephone",
-            "email",
-            "pseudo",
-            "plainPassword",
-          ]}
+          names={["nom", "prenom", "telephone", "email", "pseudo", "password"]}
           buttonText={loading ? "Mise à jour..." : "Mettre à jour les données"}
           placeHolders={[
             "Nom",
@@ -98,9 +109,9 @@ export default function alterUtilisateur() {
                     name: "statusCompte",
                     values: ["1", "0"],
                     texts: ["Actif", "Désactivé"],
-                    selectDefaultValue: utilisateur?.statusCompte == true ? "1" : "0",
+                    selectDefaultValue:
+                      utilisateur?.statusCompte == true ? "1" : "0",
                   },
-
                   {
                     label: "Rôle",
                     name: "role",

@@ -1,0 +1,75 @@
+# Nom affiché dans l'onglet GitHub Actions
+name: Front - Security
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+      
+
+  pull_request:
+    branches:
+      - dev
+      - main
+
+
+
+jobs:
+  dependency-scan:
+    name: Analyse des dépendances
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      # Echec uniquement sur les erreurs hautes
+      - name: Audit des dépendances
+        run: npm audit --audit-level=high
+        # on signale les problemes sans bloquer pour l'instant
+        continue-on-error: true
+
+  secret-scan:
+    name: Recherche de secrets
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Récupération du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  #outils de scan des vunerabilité/bonne pratiques du code
+  semgrep:
+    name: Analyse Semgrep
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Scan Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: auto

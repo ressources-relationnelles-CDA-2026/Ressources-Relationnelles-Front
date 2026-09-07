@@ -1,6 +1,7 @@
 
 import styles from "@/components/Messagerie/Page.module.css";
 import { MessagerieListConvProps } from "@/types/components/messagerie/MessagerieListConv";
+import Image from "next/image";
 
 export default function MessagerieListConv({conversations,selectedUserId,setSelectedUserId,getAvatarLetter,formatDate}:Readonly<MessagerieListConvProps>){
 
@@ -32,10 +33,12 @@ export default function MessagerieListConv({conversations,selectedUserId,setSele
                 >
              
                   {friend.photo_profil ? (
-                    <img
+                    <Image
                       src={friend.photo_profil}
                       alt=""
                       className={styles.avatar}
+                      width={100}
+                      height={100}
                     />
                   ) : (
                     <div className={styles.avatarPlaceholder}>

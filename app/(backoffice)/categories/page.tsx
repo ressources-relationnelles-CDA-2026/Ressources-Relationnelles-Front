@@ -15,16 +15,10 @@ export default function CategoriesPage() {
   const { isAdmin } = useAuth();
 
   const filteredCategories = categories.filter((categorie) => {
-    const searchLower = search.toLowerCase();
-
-    const matchLibelle = categorie.libelle.toLowerCase().includes(searchLower);
-
-    if (filterBy === "libelle") return matchLibelle;
-
-    return matchLibelle;
+    return categorie.libelle.toLowerCase().includes(search.toLowerCase());
   });
 
-  if (!isAdmin) return <AccessDenied/>;
+  if (!isAdmin) return <AccessDenied />;
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error}</p>;
@@ -38,12 +32,11 @@ export default function CategoriesPage() {
         filterBy={filterBy}
         onFilterByChange={setFilterBy}
         options={[
-          { label: "Tout", value: "all" },
           { label: "Libellé", value: "libelle" },
         ]}
       />
-      <CategoriesCard categories={filteredCategories}/>
-      <CreateButton url="/categorie/new"/>
+      <CategoriesCard categories={filteredCategories} />
+      <CreateButton url="/categorie/new" />
     </main>
   );
 }

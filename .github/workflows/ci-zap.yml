@@ -1,0 +1,68 @@
+
+name: Front - OWASP ZAP
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+      
+
+
+  pull_request:
+    branches:
+      - dev
+      - main
+
+
+jobs:
+  zap-scan:
+    name: Scan OWASP ZAP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Build du front
+        run: npm run build
+      - name: Démarrage du front
+        run: |
+          npm start &
+          echo $! > front.pid
+
+
+      - name: Attente du démarrage
+        run: |
+          for i in {1..30}; do
+            if curl -f http://127.0.0.1:3000 > /dev/null 2>&1; then
+              echo "Front disponible"
+              exit 0
+            fi
+
+            echo "Attente du front..."
+            sleep 2
+          done
+
+          echo "Le front n'a pas démarré"
+          exit 1
+
+      - name: Scan de sécurité ZAP
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+
+          target: "http://127.0.0.1:3000"
+
+          allow_issue_writing: false
+
+          # Le scan ne bloque pas encore la CI
+          fail_action: false

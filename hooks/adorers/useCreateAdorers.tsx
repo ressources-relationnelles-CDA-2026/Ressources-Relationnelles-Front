@@ -18,8 +18,8 @@ export function useCreateAdorer() {
       setData(result);
 
       return result;
-    } catch (err: any) {
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
 
       return null;
     } finally {

@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import styles from "@/components/Resource/Comment/Comment.module.css";
 import { CommentProps } from "@/types/components/resource/CommentProps";
 import { useCreateCommentaire } from "@/hooks/commentaires/useCreateCommentaire";
@@ -11,7 +11,7 @@ export default function Comment({ commentaires, ressourceId }: CommentProps) {
   const [replyToId, setReplyToId] = useState<number | null>(null);
   const { createCommentaire } = useCreateCommentaire();
   const { deleteCommentaire } = useDeleteCommentaire(0);
-  const { isAuth, isModo } = useAuth();
+  const { isAuth, isModo, userId } = useAuth();
 
   const parents = commentaires.filter(
     (commentaire) => commentaire.commentaireParentId == null,
@@ -38,7 +38,7 @@ export default function Comment({ commentaires, ressourceId }: CommentProps) {
     const res = await createCommentaire({
       contenu,
       dateCreation: new Date().toISOString(),
-      utilisateur: `/api/utilisateurs/${localStorage.getItem("userId")}`,
+      utilisateur: `/api/utilisateurs/${userId}`,
       resource: `/api/ressources/${ressourceId}`,
       commentaireParent:
         commentaireParent != null
@@ -82,6 +82,7 @@ export default function Comment({ commentaires, ressourceId }: CommentProps) {
                   onClick={() =>
                     setReplyToId(replyToId === parent.id ? null : parent.id)
                   }
+                  type="button"
                 >
                   Répondre
                 </button>

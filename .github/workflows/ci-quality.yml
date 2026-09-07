@@ -1,0 +1,42 @@
+
+name: Front - Quality
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+      
+  pull_request:
+    branches:
+      - dev
+      - main
+
+
+jobs:
+
+  quality:
+    name: Lint, TypeScript & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Vérification ESLint
+        run: npm run lint
+
+      - name: Vérification TypeScript
+        run: npm run type-check
+
+      - name: Build Next.js
+        run: npm run build

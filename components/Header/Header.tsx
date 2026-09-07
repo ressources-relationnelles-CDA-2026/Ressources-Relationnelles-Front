@@ -1,24 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import styles from "./Header.module.css";
 import { useAuth } from "@/hooks/useAuth";
-import { Ami } from "../../types/database/amis";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
-  const { isAuth, isAdmin } = useAuth();
+  const { isAuth, isAdmin, userId } = useAuth();
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const applyTheme = (isDark: boolean) => {
-      document.documentElement.setAttribute(
-        "data-theme",
-        isDark ? "dark" : "light",
-      );
+      document.documentElement.dataset.theme = isDark ? "dark" : "light";
     };
 
     applyTheme(mediaQuery.matches);
@@ -57,7 +54,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.banner}>
-        <img src="../logoRR.png" alt="Logo" />
+        <Image src="/logoRR.png" alt="Logo" width={100} height={100} />
       </div>
 
       <nav ref={navRef} className={styles.nav}>
@@ -96,7 +93,7 @@ export default function Header() {
             {isAuth && (
               <>
                 <li>
-                  <Link href={`/utilisateur/${localStorage.getItem("userId")}`}>
+                  <Link href={`/utilisateur/${userId}`}>
                     Compte utilisateur
                   </Link>
                 </li>
@@ -121,6 +118,7 @@ export default function Header() {
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Menu"
             aria-expanded={menuOpen}
+            type="button"
           >
             ☰
           </button>
@@ -172,7 +170,7 @@ export default function Header() {
               <>
                 <li>
                   <Link
-                    href={`/utilisateur/${localStorage.getItem("userId")}`}
+                    href={`/utilisateur/${userId}`}
                     onClick={() => setMenuOpen(false)}
                   >
                     Compte utilisateur

@@ -14,8 +14,8 @@ export function useDeleteFavori() {
       await deleteFavoriAPI(id);
 
       return true;
-    } catch (err: any) {
-      setError(err?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     } finally {
       setLoading(false);

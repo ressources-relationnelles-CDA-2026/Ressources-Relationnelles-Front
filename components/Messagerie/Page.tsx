@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {  useMemo, useState } from "react";
 
 import { useCreateMessage } from "@/hooks/message/useCreateMessage";
 import { User } from "@/types/database/users";
 import styles from "@/components/Messagerie/Page.module.css";
 import { useMessagerie } from "@/hooks/Messagerie/useMessagerie";
 import MessagerieNoUser from "./MessagerieNoUser";
-import { useLogin } from "@/hooks/auth/useLogin";
 import MessagerieLoading from "./MessagerieLoading";
 import MessagerieError from "./MessagerieError";
 import MessagerieHeader from "./MessagerieHeader";
@@ -16,21 +15,11 @@ import ConversationEmpty from "./conversation/ConversationEmpty";
 import ConversationHeader from "./conversation/ConversationHeader";
 import CardMessage from "./conversation/CardMessage";
 import ConversationForm from "./conversation/ConversationForm";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Page() {
 
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-  const [isAuth, setIsAuth] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUserId = localStorage.getItem("userId");
-
-    const userId = storedUserId ? Number(storedUserId) : null;
-
-    setCurrentUserId(userId);
-    setIsAuth(!!token && !!userId);
-  }, []);
+  const { isAuth, userId: currentUserId } = useAuth();
 
   const { 
     conversations, 

@@ -1,12 +1,7 @@
-export default async function deleteCategorie(id: number | null): Promise<void> {
-  const res = await fetch(`/api/categories/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+import { apiFetch } from "../apiFetch";
 
-  if (!res.ok) {
-    throw new Error(`Erreur API: ${res.status}`);
-  }
+export default async function deleteCategorie(id: number | null): Promise<void> {
+  const res = await apiFetch(`/api/categories/${id}`, {
+    method: "DELETE",
+  });
 }

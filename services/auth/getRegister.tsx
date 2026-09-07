@@ -1,4 +1,5 @@
 import { User } from "@/types/database/users";
+import { apiFetch } from "@/services/apiFetch";
 
 type RegisterData = {
   message: string;
@@ -15,7 +16,7 @@ export default async function getRegister(
   telephone: string,
   pseudo: string,
 ): Promise<RegisterData> {
-  const res = await fetch("http://localhost:8000/register", {
+  const res = await apiFetch("/api/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { FormProps } from "@/types/components/ui/FormProps";
 import styles from "@/components//ui/Form/Form.module.css";
 import Button from "@/components/ui/Button/Button";
@@ -17,21 +17,29 @@ export default function Form({
   onSubmit,
   footerContent,
 }: FormProps) {
-  const [formData, setFormData] = useState<Record<string, string>>({});
+  
+  const initialData: Record<string, string> = {
+  ...(defaultValues ?? {}),
+};
 
-  useEffect(() => {
-    const initialData: Record<string, string> = {
-      ...(defaultValues ?? {}),
-    };
+selects?.forEach((select) => {
+  if (!initialData[select.name]) {
+    initialData[select.name] = select.selectDefaultValue ?? "";
+  }
+});
 
-    selects?.forEach((select) => {
-      if (!initialData[select.name]) {
-        initialData[select.name] = select.selectDefaultValue ?? "";
-      }
-    });
+const initialDataKey = JSON.stringify(initialData);
 
-    setFormData(initialData);
-  }, [defaultValues, selects]);
+const [formData, setFormData] =
+  useState<Record<string, string>>(initialData);
+
+const [previousInitialDataKey, setPreviousInitialDataKey] =
+  useState(initialDataKey);
+
+if (initialDataKey !== previousInitialDataKey) {
+  setPreviousInitialDataKey(initialDataKey);
+  setFormData(initialData);
+}
 
   const handleChange = (key: string, value: string) => {
     setFormData((prev) => ({

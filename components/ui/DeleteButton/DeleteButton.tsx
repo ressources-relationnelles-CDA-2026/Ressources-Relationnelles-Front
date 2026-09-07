@@ -34,6 +34,7 @@ export default function DeleteButton({ onConfirm }: DeleteButtonProps) {
       ref={ref}
       onClick={handleClick}
       className={`${styles.deleteButton} ${confirm ? styles.confirm : ""}`}
+      type="button"
     >
       {confirm ? "Confirmer ?" : "X"}
     </button>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import Image from "next/image";
 
 import { useAmis } from "@/hooks/amis/useAmis";
 import { useCreateAmi } from "@/hooks/amis/useCreateAmi";
@@ -14,6 +15,7 @@ import styles from "@/components/Amis/Page.module.css";
 import AmisNoLogin from "./AmisNoLogin";
 import AmisError from "./AmisError";
 import AmisCard from "./AmisCard";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Page() {
   const {
@@ -40,18 +42,9 @@ export default function Page() {
     loading: deleting,
     error: errorDeleteAmi,
   } = useDeleteAmi();
-
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-  const [authLoaded, setAuthLoaded] = useState(false);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    const userId = storedUserId ? Number(storedUserId) : null;
-
-    setCurrentUserId(userId);
-    setAuthLoaded(true);
-  }, []);
+  const { isAuth, userId: currentUserId } = useAuth();
 
   function getAvatarLetter(user: User) {
     return user.pseudo?.charAt(0)?.toUpperCase() ?? "U";
@@ -167,7 +160,7 @@ export default function Page() {
   const loading = loadingUsers || loadingAmis;
   const error = errorUsers ?? errorAmis ?? errorCreateAmi ?? errorDeleteAmi;
 
-  if (!authLoaded) {
+  if (!isAuth) {
     return <AmisNoLogin />;
   }
 
@@ -209,10 +202,12 @@ export default function Page() {
             <article key={friend.relationId} className={styles.userCard}>
               <div className={styles.userLeft}>
                 {friend.user.photo_profil ? (
-                  <img
+                  <Image
                     src={friend.user.photo_profil}
                     alt=""
-                    className={styles.avatar}
+                    className={styles.avatar} 
+                    width={100}
+                    height={100}
                   />
                 ) : (
                   <div className={styles.avatarPlaceholder}>

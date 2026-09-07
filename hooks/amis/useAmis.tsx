@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import getAmis from "@/services/amis/getAmis";
 import { Ami } from "@/types/database/amis";
-import { errorMonitor } from "node:events";
 
 export function useAmis() {
 
@@ -18,8 +17,8 @@ export function useAmis() {
       const data = await getAmis();
       setAmis(data);
       return data;
-    } catch (err: any) {
-      setError(err?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue.");
       return [];
     } finally {
       setLoading(false);

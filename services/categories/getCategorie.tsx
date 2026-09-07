@@ -1,13 +1,10 @@
 import { Categorie } from "@/types/database/categories";
+import { apiFetch } from "../apiFetch";
 
 export default async function getCategorie(
   id: string
 ): Promise<Categorie> {
-  const res = await fetch(`/api/categories/${id}`);
-
-  if (!res.ok) {
-    throw new Error(`Erreur API: ${res.status}`);
-  }
+  const res = await apiFetch(`/api/categories/${id}`);
 
   const data: Categorie = await res.json();
 

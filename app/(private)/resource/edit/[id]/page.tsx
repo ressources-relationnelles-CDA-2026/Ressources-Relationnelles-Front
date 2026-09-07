@@ -8,14 +8,19 @@ import { usePutRessource } from "@/hooks/ressources/usePutRessource";
 import { useRessource } from "@/hooks/ressources/useRessource";
 import { useAuth } from "@/hooks/useAuth";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function newResourcePage() {
+export default function NewResourcePage() {
+  const [message, setMessage] = useState("");
+
   const params = useParams();
   const id = params.id as string;
+
   const { putRessource, loading, error } = usePutRessource(id);
   const { resource } = useRessource(id);
   const { categories } = useCategories();
-  const { isAuth, isModo } = useAuth();
+  const { isAuth, isModo, userId } = useAuth();
+
   const router = useRouter();
 
   const handleSubmit = async (formData: Record<string, string>) => {
@@ -24,11 +29,10 @@ export default function newResourcePage() {
       contenu: formData.Contenu,
       valide: isModo
         ? Boolean(Number(formData.valide))
-        : (resource?.valide ?? false),
+        : (Boolean(resource?.valide) ?? false),
       date_creation: resource?.dateCreation ?? new Date().toISOString(),
       visibilite: formData.visibilite,
-      utilisateur:
-        resource?.utilisateur.id ?? Number(localStorage.getItem("userId")),
+      utilisateur: resource?.utilisateur.id ?? Number(userId),
       categorie: formData.categorie,
       tags: resource?.tagsRessources.map((tag) => `/api/tags/${tag.id}`) ?? [
         "",
@@ -36,24 +40,25 @@ export default function newResourcePage() {
     });
 
     if (res) {
+      setMessage("Modification réussie !");
       setTimeout(() => {
         router.push(`/resources`);
       });
     }
   };
 
-  if (
-    !isAuth &&
-    localStorage.getItem("userId") != String(resource?.utilisateur.id) &&
-    !isModo
-  )
+  if (!isAuth || (userId != Number(resource?.utilisateur.id) && !isModo)) {
     return <AccessDenied />;
+  }
 
   if (loading) return <p>Chargement...</p>;
 
   return (
     <>
-      {error && <FormMessage message={error} />}
+      {(message || error) && (
+        <FormMessage message={message || error || ""} error={!!error} />
+      )}
+
       <div className="page">
         <Form
           titreForm="Modifier une ressource"

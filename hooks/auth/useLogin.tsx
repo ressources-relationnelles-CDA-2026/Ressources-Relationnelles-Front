@@ -30,12 +30,9 @@ export function useLogin() {
 
       setData(result);
 
-      localStorage.setItem("token", `${result.token}`);
-      localStorage.setItem("userId", `${result.user.id}`)
-
       return result;
-    } catch (err: any) {
-      setError(err?.message ?? "Erreur inconnue");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       return null;
     } finally {
       setLoading(false);

@@ -10,6 +10,7 @@
   text-align: center;
   font-weight: 500;
   border: 1px solid transparent;
+  white-space: pre-line;
 }
 
 /* SUCCESS */

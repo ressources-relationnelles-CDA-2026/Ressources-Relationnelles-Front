@@ -12,19 +12,43 @@ import { PageProps } from "@/types/components/resource/PageProps";
 import { useCreateConsultation } from "@/hooks/consultations/useCreateConsultation";
 
 import styles from "@/components/Resource/Page/Page.module.css";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Page({ resource }: Readonly<PageProps>) {
-  
+  const { isAuth, userId } = useAuth();
+  const existingLike =
+      isAuth && userId
+       ? resource.adorers.find(
+        (adorer) => adorer.utilisateur.id === userId,
+      )
+      : undefined;
+
+    const existingFavori =
+    isAuth && userId
+    ? resource.favoris.find(
+        (favori) => favori.utilisateur.id === userId,
+      )
+    : undefined;
+
+   const interactionKey = [
+  resource.id,
+  userId ?? "anonymous",
+  existingLike?.id ?? "no-like",
+  existingFavori?.id ?? "no-favori",
+].join(":");
+
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isFavoris, setIsFavoris] = useState<boolean>(false);
 
   const [adorerId, setAdorerId] = useState<number | null>(null);
   const [favoriId, setFavoriId] = useState<number | null>(null);
 
+  const [previousInteractionKey, setPreviousInteractionKey] =useState(interactionKey);
+
   const [adorersCount, setAdorersCount] = useState(resource.adorers.length);
   const [favorisCount, setFavorisCount] = useState(resource.favoris.length);
   const [consultationsCount, setConsultationsCount] = useState(
-    resource.consultations.length
+    resource.consultations.length,
   );
 
   const { createConsultation } = useCreateConsultation();
@@ -37,10 +61,8 @@ export default function Page({ resource }: Readonly<PageProps>) {
 
       consultationCreated.current = true;
 
-      const userId = localStorage.getItem("userId");
-
       const consultation = await createConsultation({
-        utilisateur: userId ? `/api/utilisateurs/${userId}` : null,
+        utilisateur: isAuth && userId ? `/api/utilisateurs/${userId}` : null,
         resource: `/api/ressources/${resource.id}`,
       });
 
@@ -50,32 +72,15 @@ export default function Page({ resource }: Readonly<PageProps>) {
     }
 
     addConsultation();
-  }, [createConsultation, resource.id]);
+  }, [createConsultation, resource.id, isAuth, userId]);
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    const currentUserId = storedUserId ? Number(storedUserId) : null;
-
-    if (!currentUserId) return;
-
-    const existingLike = resource.adorers.find(
-      (adorer) => adorer.utilisateur.id === currentUserId
-    );
-
-    const existingFavori = resource.favoris.find(
-      (favori) => favori.utilisateur.id === currentUserId
-    );
-
-    if (existingLike) {
-      setIsLiked(true);
-      setAdorerId(existingLike.id);
-    }
-
-    if (existingFavori) {
-      setIsFavoris(true);
-      setFavoriId(existingFavori.id);
-    }
-  }, [resource]);
+  if (interactionKey !== previousInteractionKey) {
+  setPreviousInteractionKey(interactionKey);
+  setIsLiked(Boolean(existingLike));
+  setAdorerId(existingLike?.id ?? null);
+  setIsFavoris(Boolean(existingFavori));
+  setFavoriId(existingFavori?.id ?? null);
+}
 
   return (
     <div className={styles.resourcePage}>
@@ -111,7 +116,10 @@ export default function Page({ resource }: Readonly<PageProps>) {
           categorie={resource.categorie}
         />
 
-        <Comment commentaires={resource.commentaires} ressourceId={resource.id} />
+        <Comment
+          commentaires={resource.commentaires}
+          ressourceId={resource.id}
+        />
       </div>
     </div>
   );
